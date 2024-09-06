@@ -3,15 +3,18 @@ import { useAuth } from '../contexts/AuthContext';
 import { FaEnvelope, FaUser, FaCommentAlt } from 'react-icons/fa';
 import api from '../services/api';
 
-
 const ContactUs = () => {
+  // Utilizza il contesto di autenticazione per ottenere informazioni sull'utente
   const { user, isAuthenticated } = useAuth();
+  
+  // Stato per gestire i dati del form
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     message: ''
   });
 
+  // Effetto per pre-compilare il form con i dati dell'utente se autenticato
   useEffect(() => {
     if (isAuthenticated && user) {
       setFormData(prevState => ({
@@ -22,13 +25,16 @@ const ContactUs = () => {
     }
   }, [isAuthenticated, user]);
 
+  // Gestisce i cambiamenti nei campi del form
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Gestisce l'invio del form
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Invia i dati del form all'API
       await api.post('/email/send', formData);
       console.log('Form submitted:', formData);
       alert('Messaggio inviato! Ti risponderemo presto.');
@@ -42,6 +48,7 @@ const ContactUs = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="bg-base-200 rounded-lg shadow-xl overflow-hidden">
         <div className="flex flex-col md:flex-row">
+          {/* Sezione informativa */}
           <div className="bg-primary text-primary-content p-8 md:w-1/3">
             <h1 className="text-4xl font-bold mb-4">Contattaci</h1>
             <p className="text-xl mb-6">
@@ -51,8 +58,10 @@ const ContactUs = () => {
             <FaEnvelope className="text-6xl mx-auto mt-20 animate-bounce" />
           </div>
           
+          {/* Form di contatto */}
           <div className="p-8 md:w-2/3">
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Campo Nome */}
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Nome</span>
@@ -71,6 +80,7 @@ const ContactUs = () => {
                 </label>
               </div>
               
+              {/* Campo Email */}
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Email</span>
@@ -89,6 +99,7 @@ const ContactUs = () => {
                 </label>
               </div>
               
+              {/* Campo Messaggio */}
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Messaggio</span>
@@ -106,6 +117,7 @@ const ContactUs = () => {
                 </label>
               </div>
               
+              {/* Pulsante di invio */}
               <button type="submit" className="btn btn-primary w-full">Invia Messaggio</button>
             </form>
           </div>

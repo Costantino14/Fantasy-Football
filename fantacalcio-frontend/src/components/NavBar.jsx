@@ -6,6 +6,8 @@ export default function NavBar() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
+
+// Funzione per il logOut
   const handleLogout = () => {
     logout();
     navigate('/');

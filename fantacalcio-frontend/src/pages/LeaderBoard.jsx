@@ -5,18 +5,23 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 
 const Leaderboard = () => {
+  // Stato per memorizzare i dati della classifica
   const [leaderboard, setLeaderboard] = useState([]);
+  // Stato per gestire il caricamento
   const [isLoading, setIsLoading] = useState(true);
+  // Stato per gestire gli errori
   const [error, setError] = useState(null);
 
+  // useEffect per caricare i dati della classifica all'avvio del componente
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
         setIsLoading(true);
+        // Recupera tutti gli utenti
         const response = await getUsers();
         const users = response.users;
 
-        // Fetch team data for each user
+        // Recupera i dati del team per ogni utente
         const leaderboardPromises = users.map(async user => {
           try {
             const teamData = await getUserTeam(user._id);
@@ -32,7 +37,9 @@ const Leaderboard = () => {
           }
         });
 
+        // Attende che tutte le promesse siano risolte
         const leaderboardData = await Promise.all(leaderboardPromises);
+        // Filtra eventuali risultati null e ordina per punteggio totale
         const sortedLeaderboard = leaderboardData
           .filter(item => item !== null)
           .sort((a, b) => b.totalScore - a.totalScore);
@@ -47,11 +54,14 @@ const Leaderboard = () => {
     };
 
     fetchLeaderboard();
-  }, []);
+  }, []); // L'array vuoto assicura che questo effect venga eseguito solo una volta all'avvio
 
+  // Rendering condizionale per lo stato di caricamento
   if (isLoading) return <LoadingSpinner />;
+  // Rendering condizionale per lo stato di errore
   if (error) return <ErrorMessage message={error} />;
 
+  // Rendering della classifica
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold text-center mb-8 text-white">Classifica Generale</h1>
@@ -70,6 +80,7 @@ const Leaderboard = () => {
               <tr key={team.id} className={index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-800'}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
+                    {/* Icone per le prime tre posizioni */}
                     {index === 0 && <FaTrophy className="text-yellow-400 mr-2" />}
                     {index === 1 && <FaMedal className="text-gray-400 mr-2" />}
                     {index === 2 && <FaMedal className="text-yellow-600 mr-2" />}

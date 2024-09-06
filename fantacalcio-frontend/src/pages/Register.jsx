@@ -6,7 +6,7 @@ export default function Register() {
   
   const [avatar, setAvatar] = useState();
 
-  // Definisco lo stato del form con useState, inizializzato con campi vuoti
+  // Definisce lo stato del form con useState
   const [formData, setFormData] = useState({
     username: "",
     email: "",  
@@ -22,7 +22,7 @@ export default function Register() {
     setAvatar(e.target.files[0]);
   };
 
-
+  //Gestore cambiamenti del form
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -36,6 +36,8 @@ export default function Register() {
     Object.keys(formData).forEach(key => {
       formDataToSend.append(key, formData[key]);
     });
+
+    //Se esiste l'avatar aggiunge l'indice avatar con il dato alla formDataTOSend
     if (avatar) {
       formDataToSend.append('avatar', avatar);
     }
@@ -55,6 +57,8 @@ export default function Register() {
         <h1 className="text-center text-4xl md:text-5xl font-extrabold text-white mb-8">
           Unisciti a Fantasy Football!
         </h1>
+
+        {/*Form per la registrazione*/}
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <label className="input input-bordered input-success input-lg flex items-center gap-2 w-full bg-gray-800 text-white border-gray-700">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-5 h-5 opacity-70">
@@ -109,7 +113,7 @@ export default function Register() {
             required/>
           </label>
         
-
+        {/*Form di tipo file per aggiungere una foto*/}
         <div className="mt-6">
           <label className="flex items-center gap-2 w-full cursor-pointer">
             <span className="text-lg font-medium text-white">Avatar</span>
@@ -120,10 +124,12 @@ export default function Register() {
           </label>
         </div>
 
+        {/*Bottone di submit*/}
         <button 
         type="submit" 
         className="btn btn-primary btn-lg w-full text-lg mt-8 py-3">
-        Registrati</button>
+          Registrati
+        </button>
       </form>
       </div>
     </div>

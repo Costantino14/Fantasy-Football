@@ -6,6 +6,7 @@ import axios from 'axios';
 import ErrorMessage from '../components/ErrorMessage';
 
 export default function GamePage() {
+  // Stati per gestire i dati della squadra e le performance dei giocatori
   const [team, setTeam] = useState(null);
   const [allPlayers, setAllPlayers] = useState([]);
   const [teamPlayers, setTeamPlayers] = useState([]);
@@ -13,15 +14,17 @@ export default function GamePage() {
   const [weeklyScore, setWeeklyScore] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { user } = useAuth();
-  const [currentGameweek, setCurrentGameweek] = useState(3);
+  const { user } = useAuth(); // Ottiene l'utente dal contesto di autenticazione
+  const [currentGameweek, setCurrentGameweek] = useState(3); // Gameweek corrente, inizializzata a 3
 
+  // Effetto per caricare i dati della squadra e le performance
   useEffect(() => {
     const fetchData = async () => {
       if (user) {
         setIsLoading(true);
         setError(null);
         try {
+          // Esegue chiamate API parallele per ottenere dati squadra, performance e giocatori
           const [teamData, performancesData, allPlayersData] = await Promise.all([
             getUserTeam(user._id),
             getPlayerPerformances(currentGameweek),
@@ -31,17 +34,20 @@ export default function GamePage() {
           setTeam(teamData);
           setAllPlayers(allPlayersData);
           
+          // Converte l'array delle performance in un oggetto per un accesso più veloce
           const performancesObj = performancesData.reduce((acc, perf) => {
             acc[perf.playerId] = perf;
             return acc;
           }, {});
           setPerformances(performancesObj);
 
+          // Filtra i giocatori della squadra dell'utente
           const filteredPlayers = allPlayersData.filter(player => 
             teamData.players.some(teamPlayer => teamPlayer.id === player.id)
           );
           setTeamPlayers(filteredPlayers);
 
+          // Calcola il punteggio settimanale
           try {
             const scoreData = await calculateTeamScore(user._id, currentGameweek);
             setWeeklyScore(scoreData.weeklyScore);
@@ -64,8 +70,9 @@ export default function GamePage() {
     };
 
     fetchData();
-  }, [user, currentGameweek]);
+  }, [user, currentGameweek]); // L'effetto si attiva quando l'utente o la gameweek cambiano
 
+  // Funzione per renderizzare la card di un singolo giocatore
   const renderPlayerCard = (player, isInFormation = false) => {
     const performance = performances[player.id] || {};
     const positionColors = {
@@ -98,11 +105,13 @@ export default function GamePage() {
     );
   };
 
+  // Funzione per renderizzare tutti i giocatori della squadra
   const renderPlayers = (players, activeFormation) => {
     const positions = ['Goalkeeper', 'Defender', 'Midfielder', 'Attacker'];
     const starters = [];
     const reserves = [];
 
+    // Divide i giocatori in titolari e riserve in base alla formazione attiva
     positions.forEach(position => {
       const positionPlayers = players.filter(player => player.position === position);
       const startersForPosition = positionPlayers.filter(player => 
@@ -131,15 +140,18 @@ export default function GamePage() {
     );
   };
 
+  // Rendering condizionale per stato di caricamento e errori
   if (isLoading) return <LoadingSpinner />;
   if (error) return <ErrorMessage message={error} />;
 
+  // Trova la formazione attiva per la gameweek corrente
   const activeFormation = team?.activeFormations.find(f => f.gameweek === currentGameweek);
 
   return (
     <div className="container mx-auto p-4 bg-gray-900 min-h-screen">
       <h1 className="text-4xl font-bold mb-6 text-center text-white">Performance della Squadra</h1>
       
+      {/* Selezione della gameweek */}
       <div className="mb-6 flex justify-center items-center space-x-4">
         <label htmlFor="gameweek-input" className="text-white">Gameweek:</label>
         <input 
@@ -152,6 +164,7 @@ export default function GamePage() {
         />
       </div>
 
+      {/* Visualizzazione del punteggio settimanale */}
       {weeklyScore !== null ? (
         <div className="text-2xl font-bold mb-6 text-center text-green-500">
           Punteggio Gameweek {currentGameweek}: {weeklyScore.toFixed(2)}
@@ -162,6 +175,7 @@ export default function GamePage() {
         </div>
       )}
 
+      {/* Rendering condizionale dei giocatori della squadra */}
       {(!team || teamPlayers.length === 0 || !activeFormation) ? (
         <div className="bg-yellow-500 text-white p-4 rounded-lg text-center mb-6">
           <p className="text-lg font-semibold">

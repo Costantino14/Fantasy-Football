@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaFutbol, FaUsers, FaChartLine, FaTrophy, FaLightbulb } from 'react-icons/fa';
 
+// Componente per una singola sezione di istruzioni
 const InstructionSection = ({ title, icon, children }) => {
+  // Stato per gestire l'apertura/chiusura della sezione
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -12,6 +14,8 @@ const InstructionSection = ({ title, icon, children }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
+
+      {/* Pulsante per aprire/chiudere la sezione */}
       <button
         className="w-full p-4 flex items-center justify-between text-white"
         onClick={() => setIsOpen(!isOpen)}
@@ -22,6 +26,8 @@ const InstructionSection = ({ title, icon, children }) => {
         </div>
         <span className="text-2xl">{isOpen ? '−' : '+'}</span>
       </button>
+
+      {/* Contenuto della sezione con animazione */}
       <motion.div
         initial={{ height: 0 }}
         animate={{ height: isOpen ? 'auto' : 0 }}
@@ -37,6 +43,8 @@ const InstructionSection = ({ title, icon, children }) => {
 const GameInstructions = () => {
   return (
     <div className="container mx-auto px-4 py-8 bg-dark-100 min-h-screen">
+
+      {/* Titolo principale con animazione */}
       <motion.h1
         className="text-4xl font-extrabold text-center mb-10 text-green-600"
         initial={{ opacity: 0, y: -50 }}
@@ -46,6 +54,7 @@ const GameInstructions = () => {
         Domina il Fantacalcio! 🏆
       </motion.h1>
 
+      {/* Sezioni di istruzioni */}
       <InstructionSection title="Registrati per accedere a tutte le funzioni:" icon={<FaUsers className="text-2xl" />}>
         <ul className="list-disc pl-5 space-y-2 text-gray-700">
           <li>Vai nella sezione Registrazione</li>

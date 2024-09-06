@@ -35,7 +35,7 @@ const MatchFixture = ({ match }) => {
   );
 };
 
-// Componente per visualizzare le prossime partite
+// Componente per visualizzare le prossime partite di detterminate squadre
 const NextMatches = ({ matches }) => {
   const topTeams = ['Juventus', 'Inter', 'AC Milan', 'Napoli', 'Atalanta'];
   const today = new Date();
@@ -90,6 +90,7 @@ const NextMatches = ({ matches }) => {
     });
   }, [matches, today]);
 
+  // Se non esiste
   if (!currentOrNextRound) return <div>Nessun match disponibile</div>;
 
   const [roundName, roundMatches] = currentOrNextRound;
@@ -150,6 +151,7 @@ export default function SerieAComponent() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
         {/* Sezione Classifica */}
         <div className="w-full">
           <h2 className="text-2xl font-bold mb-4">Classifica</h2>
@@ -195,7 +197,7 @@ export default function SerieAComponent() {
           {/* Link di navigazione */}
           <Link to="/SerieA" className="btn btn-primary mt-8">Vai alla Serie A</Link>
         </div>
-        {/* Sezione Prossime Partite */}
+        {/* Sezione Prossime Partite delle migliori 5*/}
         <div className="w-full">
           <NextMatches matches={matches} />
         </div>

@@ -6,6 +6,7 @@ import LoadingSpinner from '../components/LoadingSpinner'
 import { Link } from 'react-router-dom';
 import ErrorMessage from '../components/ErrorMessage';
 
+// Componente per visualizzare la tabella della classifica
 const StandingsTable = ({ teams }) => (
   <table className="table w-full">
     <thead>
@@ -50,6 +51,7 @@ const StandingsTable = ({ teams }) => (
   </table>
 );
 
+// Componente per visualizzare una singola partita
 const MatchFixture = ({ match }) => {
   const matchDate = parseISO(match.fixture.date);
   const formattedDate = format(matchDate, 'dd/MM/yyyy', { locale: it });
@@ -81,9 +83,11 @@ const MatchFixture = ({ match }) => {
   );
 };
 
+// Componente per visualizzare le partite raggruppate per giornata
 const MatchesByRound = ({ matches }) => {
   const [selectedRound, setSelectedRound] = useState(null);
 
+  // Raggruppa le partite per giornata
   const matchesByRound = useMemo(() => {
     return matches.reduce((acc, match) => {
       const round = match.league.round;
@@ -95,6 +99,7 @@ const MatchesByRound = ({ matches }) => {
     }, {});
   }, [matches]);
 
+  // Ordina le giornate
   const sortedRounds = useMemo(() => {
     return Object.keys(matchesByRound).sort((a, b) => {
       const roundA = parseInt(a.match(/\d+/)[0]);
@@ -103,6 +108,7 @@ const MatchesByRound = ({ matches }) => {
     });
   }, [matchesByRound]);
 
+  // Seleziona la prima giornata di default
   useEffect(() => {
     if (sortedRounds.length > 0 && !selectedRound) {
       setSelectedRound(sortedRounds[0]);
@@ -140,6 +146,7 @@ const MatchesByRound = ({ matches }) => {
   );
 };
 
+// Componente per visualizzare la lista dei migliori giocatori
 const TopPlayersList = ({ players, title, statKey }) => (
   <div className="card bg-base-100 shadow-xl">
     <div className="card-body">
@@ -179,6 +186,7 @@ const TopPlayersList = ({ players, title, statKey }) => (
   </div>
 );
 
+// Componente per visualizzare le statistiche dei marcatori e assistman
 const MarcatoriStats = ({ topScorers, topAssists }) => (
   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
     <TopPlayersList players={topScorers} title="Top 5 Marcatori" statKey="goals" />
@@ -186,6 +194,7 @@ const MarcatoriStats = ({ topScorers, topAssists }) => (
   </div>
 );
 
+// Componente principale SerieA
 export default function SerieAComponent() {
   const [teams, setTeams] = useState([]);
   const [matches, setMatches] = useState([]);
@@ -195,6 +204,7 @@ export default function SerieAComponent() {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('classifica');
 
+  // Effetto per caricare i dati all'avvio del componente
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -219,11 +229,13 @@ export default function SerieAComponent() {
     fetchData();
   }, []);
 
+  // Gestione dello stato di caricamento e degli errori
   if (isLoading) return <LoadingSpinner />;
   if (error) return <ErrorMessage message={error} />;
 
   return (
     <div className="container mx-auto px-4 mt-3">
+      {/* Tabs per la selezione della vista */}
       <div className="join mb-4">
         <input 
           className="btn btn-outline btn-success px-10 mx-2" 
@@ -251,6 +263,7 @@ export default function SerieAComponent() {
         />
       </div>
 
+      {/* Rendering condizionale basato sul tab attivo */}
       {activeTab === 'classifica' && <StandingsTable teams={teams} />}
       {activeTab === 'calendario' && <MatchesByRound matches={matches} />}
       {activeTab === 'marcatori/assistman' && <MarcatoriStats topScorers={topScorers} topAssists={topAssists} />}

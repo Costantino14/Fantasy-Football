@@ -4,11 +4,13 @@ import Team from '../../../fantacalcio-backend/models/Team.js';
 
 
 // Vecchie Chiavi'51359a0e1e98395b680398d164617249','e34be750ace0565de34bc91ff1c7112a','dfbed93db51276f477fd33c666a2f9db','f999eefeb22ef86d1b15f56ce1d1f911', '69b6dac7fa977bff6a8bfb4d5f2da069','757eacb3c8189beb6908a2bb3bb67faf','8275bbd2b3f2949d1472563cf96433bd'
+// Chiavi API per l'autenticazione
 const API_KEYS = ['03cc38b86dfac37d95d78223677ea20f', '03cc38b86dfac37d95d78223677ea20f', '03cc38b86dfac37d95d78223677ea20f', ];
 const API_HOST = 'v3.football.api-sports.io';
 const SERIE_A_LEAGUE_ID = 135;
 const CURRENT_SEASON = 2024;
 
+// Funzione per creare un'istanza di Axios configurata per l'API
 const createApiInstance = (apiKey) => {
   return axios.create({
     baseURL: 'https://v3.football.api-sports.io',
@@ -21,9 +23,10 @@ const createApiInstance = (apiKey) => {
   });
 };
 
+// Funzione di utilità per creare un ritardo
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-
+// Funzione per effettuare chiamate API con fallback su multiple chiavi
 const apiCallWithFallback = async (endpoint, params) => {
   let lastError;
   for (let i = 0; i < API_KEYS.length; i++) {
@@ -51,7 +54,7 @@ const apiCallWithFallback = async (endpoint, params) => {
       // Se l'errore è dovuto al limite di chiamate raggiunto, passa alla chiave successiva
       if (error.response && error.response.status === 429) {
         console.warn(`Limite di chiamate raggiunto per la chiave API ${i + 1}`);
-        continue;
+        continue; // Passa alla chiave successiva
       }
       
       lastError = error;
@@ -67,6 +70,7 @@ const apiCallWithFallback = async (endpoint, params) => {
   throw lastError || new Error('Fallimento di tutte le chiavi API');
 };
 
+// Funzione per recuperare la classifica
 export const fetchStandings = async (league, season) => {
   try {
     const data = await apiCallWithFallback('/standings', { league, season });
@@ -77,6 +81,7 @@ export const fetchStandings = async (league, season) => {
   }
 };
 
+// Funzione per recuperare le partite
 export const fetchFixtures = async (league, season) => {
   try {
     const data = await apiCallWithFallback('/fixtures', { league, season });
@@ -88,7 +93,7 @@ export const fetchFixtures = async (league, season) => {
   }
 };
 
-
+// Funzione per recuperare i giocatori della Serie A
 export const fetchSerieAPlayers = async (startPage = 1) => {
   let allPlayers = [];
   let currentPage = startPage;
@@ -125,6 +130,7 @@ export const fetchSerieAPlayers = async (startPage = 1) => {
         } else {
           consecutiveEmptyPages = 0;
           const formattedPlayers = players.map(player => ({
+            // Mapping dei dati del giocatore
             id: player.player.id,
             name: player.player.name,
             photo: player.player.photo || '',
@@ -180,14 +186,14 @@ export const fetchSerieAPlayers = async (startPage = 1) => {
       }
     }
 
-    await delay(3000); // Respect API rate limits
+    await delay(3000); // Rispetta l'API rate limits
   }
 
   console.log(`Total Serie A players fetched: ${allPlayers.length}`);
   return { players: allPlayers, lastPage: currentPage - 1 };
 };
 
-
+// Funzione per recuperare i migliori marcatori
 export const fetchTopScorers = async (league = SERIE_A_LEAGUE_ID, season = CURRENT_SEASON) => {
   try {
     const data = await apiCallWithFallback('/players/topscorers', { league, season });
@@ -204,6 +210,7 @@ export const fetchTopScorers = async (league = SERIE_A_LEAGUE_ID, season = CURRE
   }
 };
 
+// Funzione per recuperare i migliori assistmans
 export const fetchTopAssists = async (league = SERIE_A_LEAGUE_ID, season = CURRENT_SEASON) => {
   try {
     const data = await apiCallWithFallback('/players/topassists', { league, season });
@@ -220,7 +227,7 @@ export const fetchTopAssists = async (league = SERIE_A_LEAGUE_ID, season = CURRE
   }
 };
 
-
+// Funzione per recuperare gli eventi di una partita
 export const fetchMatchEvents = async (fixtureId) => {
   try {
     const data = await apiCallWithFallback('/fixtures/events', { fixture: fixtureId });
@@ -231,6 +238,7 @@ export const fetchMatchEvents = async (fixtureId) => {
   }
 };
 
+// Funzione per recuperare le lineups di una partita
 export const fetchMatchLineups = async (fixtureId) => {
   try {
     const data = await apiCallWithFallback('/fixtures/lineups', { fixture: fixtureId });
@@ -243,9 +251,7 @@ export const fetchMatchLineups = async (fixtureId) => {
 
 
 
-//////////////////////////////////////////////////
-
-
+// Funzione per aggiornare le performance dei giocatori per una data specifica
 export const updatePerformancesForDate = async (date) => {
   const fixturesData = await getFixturesForDate(date);
   
@@ -266,6 +272,7 @@ export const updatePerformancesForDate = async (date) => {
   }
 };
 
+// Funzione per aggiornare le performance dei giocatori per una partita specifica
 const updatePerformancesForFixture = async (fixtureId, date, gameweek) => {
   const data = await apiCallWithFallback('/fixtures/players', { fixture: fixtureId });
 
@@ -283,6 +290,7 @@ const updatePerformancesForFixture = async (fixtureId, date, gameweek) => {
   }
 };
 
+// Funzione per recuperare le partite per una data specifica
 const getFixturesForDate = async (date) => {
   const formattedDate = date.toISOString().split('T')[0];
   return await apiCallWithFallback('/fixtures', {
@@ -292,7 +300,7 @@ const getFixturesForDate = async (date) => {
   });
 };
 
-
+// Funzione per processare i dati di un giocatore
 const processPlayerData = (player, teamName, gameweek, date) => {
   const stats = player.statistics[0];
   console.log('Dati del giocatore:', JSON.stringify(player, null, 2));
@@ -321,16 +329,14 @@ const processPlayerData = (player, teamName, gameweek, date) => {
   };
 };
 
+// Funzione per calcolare il punteggio fantasy di un giocatore
 const calculateFantasyScore = (stats) => {
   let score = parseFloat(stats.games.rating) || 0;
   console.log('Rating iniziale:', score);
 
+  //Si aggiunge il punteggio in base alle stats ricevute dal giocatore nella partita
   score += (stats.goals.total || 0) * 3;
-  console.log('Rating dopo il goal:', score);
-
   score += (stats.goals.assists || 0) * 2;
-  console.log('Rating dopo assist:', score);
-
   score -= (stats.cards.yellow || 0) * 1;
   score -= (stats.cards.red || 0) * 3;
   score += (stats.goals.saves || 0) * 1;
@@ -357,7 +363,7 @@ const calculateFantasyScore = (stats) => {
    return roundedScore;
 };
 
-
+// Funzione per aggiornare i punteggi delle squadre
 export const updateTeamScores = async (gameweek) => {
   const teams = await Team.find().populate('players');
   for (const team of teams) {

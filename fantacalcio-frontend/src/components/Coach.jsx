@@ -73,12 +73,14 @@ export default function Coach() {
               }
             </p>
             <div className="flex space-x-4 mt-8">
+              {/* Controllo se sei loggato */}
               {!user.team ? (
                 <button className="btn btn-primary" onClick={handleCreateTeam}>
                   Crea la tua squadra
                 </button>
-              ) : (<Link to="/MyTeam" className="btn btn-primary ">La mia squadra</Link>)}
-              
+              ) : (
+              <Link to="/MyTeam" className="btn btn-primary ">La mia squadra</Link>
+              )}
               <button className="btn btn-neutral ms-2" onClick={handleLogout}>Logout</button>
             </div>  
           </div>

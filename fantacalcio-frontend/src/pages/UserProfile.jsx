@@ -4,17 +4,19 @@ import { getUserData, getUserTeam, getFormationStatus } from '../services/api';
 import { FaUser, FaEnvelope, FaFutbol, FaCoins, FaUsers } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import ErrorMessage from '../components/ErrorMessage';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const UserProfile = () => {
     
-    const navigate = useNavigate();
-    const { user } = useAuth();
-    const [userData, setUserData] = useState(null);
-    const [team, setTeam] = useState(null);
-    const [formationStatus, setFormationStatus] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [userData, setUserData] = useState(null);
+  const [team, setTeam] = useState(null);
+  const [formationStatus, setFormationStatus] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  //UseEffect per ottenere i dati dell'utente e dello status della formazione
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -39,17 +41,21 @@ const UserProfile = () => {
     }
   }, [user]);
 
+
+  //Funzione per la navigazione verso la pagina MyTeam
   const handleSetFormation = () => {
     navigate('/MyTeam'); 
   };
 
-  if (loading) return <div className="text-center py-10 text-white">Caricamento...</div>;
+  // Rendering condizionale per lo stato di caricamento o di errore
+  if (loading) return <LoadingSpinner />;
   if (error) return <ErrorMessage message={error} />;
   if (!userData || !team) return <ErrorMessage message={'Nessun dato utente disponibile'} />;
 
   return (
     <div className="container mx-auto p-4 bg-gray-900 text-white">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
         {/* Informazioni Utente */}
         <div className="col-span-1 bg-gray-800 border border-gray-700 rounded-lg p-4">
           <h2 className="text-2xl font-bold text-center text-green-400 mb-4">Profilo Utente</h2>

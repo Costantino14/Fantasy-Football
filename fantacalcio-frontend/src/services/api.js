@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+// Creazione di un'istanza axios con una base URL configurata
+
 const api = axios.create({
   baseURL: 'http://localhost:5001/api',
 });
@@ -25,6 +27,7 @@ api.interceptors.request.use(
 
 // Funzioni per le chiamate API esistenti
 
+// Funzione per recuperare la lista degli utenti con paginazione e ordinamento
 export const getUsers = async (page = 1, limit = 10, sort = 'username', sortDirection = 'asc') => {
   try {
     const response = await api.get("/users", {
@@ -37,9 +40,10 @@ export const getUsers = async (page = 1, limit = 10, sort = 'username', sortDire
   }
 };
 
-//
+// Funzione per recuperare un singolo utente per ID
 export const getUser = (id) => api.get(`/users/${id}`);
 
+// Funzione per registrare un nuovo utente
 export const registerUser = async (userData) => {
   try {
     const response = await api.post("/users", userData, {
@@ -54,7 +58,7 @@ export const registerUser = async (userData) => {
   }
 };
 
-
+// Funzione per recuperare il team di un utente
 export const getUserTeam = async (userId) => {
   if (!userId) {
     console.error("getUserTeam chiamato senza userId");
@@ -71,6 +75,7 @@ export const getUserTeam = async (userId) => {
   }
 };
 
+// Funzione per ottenere o creare il team di un utente quando si registra la prima volta
 export const getOrCreateTeam = async (userId) => {
   if (!userId) {
     throw new Error("ID utente non fornito");
@@ -85,6 +90,7 @@ export const getOrCreateTeam = async (userId) => {
   }
 };
 
+// Funzione per acquistare un giocatore
 export const buyPlayer = async (userId, playerId) => {
   try {
     console.log(`Chiamata API per acquisto: userId=${userId}, playerId=${playerId}`);
@@ -97,6 +103,7 @@ export const buyPlayer = async (userId, playerId) => {
   }
 };
 
+// Funzione per vendere un giocatore
 export const sellPlayer = async (userId, playerId) => {
   try {
     console.log(`Tentativo di vendita giocatore: userId=${userId}, playerId=${playerId}`);
@@ -118,14 +125,11 @@ export const sellPlayer = async (userId, playerId) => {
   }
 };
 
-//
-export const updateUser = (id, userData) =>
-  api.put(`/users/${id}`, userData);
+// Funzione per aggiornare i dati di un utente
+export const updateUser = (id, userData) => api.put(`/users/${id}`, userData);
 
-//
+// Funzione per eliminare un utente
 export const deleteUser = (id) => api.delete(`/users/${id}`);
-
-
 
 // Funzione per effettuare il login di un utente
 export const loginUser = async (credentials) => {
@@ -140,7 +144,6 @@ export const loginUser = async (credentials) => {
 };
 
 //Funzione per ottenere i dati dell'utente attualmente autenticato
-//
 export const getMe = () =>
   api.get("/users/me").then((response) => response.data);
 
@@ -155,7 +158,7 @@ export const getUserData = async () => {
   }
 };
 
-
+// Funzione per recuperare tutti i giocatori della Serie A
 export const getAllSerieAPlayers = async () => {
   try {
     const response = await api.get("/playersSerieA");
@@ -166,7 +169,7 @@ export const getAllSerieAPlayers = async () => {
   }
 };
 
-//
+// Funzione per recuperare i giocatori di una specifica squadra
 export const getPlayersByTeam = async (teamName) => {
   console.log('Chiamata API per la squadra:', teamName);
   try {
@@ -180,12 +183,14 @@ export const getPlayersByTeam = async (teamName) => {
   }
 };
 
+// Funzione per ottenere lo stato del mercato
 export const getMarketStatus = async () => {
   try {
     const response = await api.get('/admin/market-status');
     console.log('Risposta getMarketStatus:', response.data);
     return {
       isOpen: response.data.isOpen,
+      //Se isOpen è true allora metti un messaggio, se è false allora metti l'altro
       message: response.data.message || (response.data.isOpen ? "Il mercato è aperto." : "Il mercato è chiuso."),
       nextOpeningDate: response.data.nextOpeningDate
     };
@@ -199,12 +204,13 @@ export const getMarketStatus = async () => {
   }
 };
 
-
+// Funzione per ottenere le finestre di mercato
 export const getMarketWindows = async () => {
   const response = await api.get('/admin/market-windows');
   return response.data;
 };
 
+// Funzione per creare una nuova finestra di mercato
 export const createMarketWindow = async (windowData) => {
   try {
     console.log('Invio dati al server:', windowData);
@@ -217,12 +223,13 @@ export const createMarketWindow = async (windowData) => {
   }
 };
 
+// Funzione per aggiornare le finestre di mercato
 export const updateMarketWindow = async (id, windowData) => {
   const response = await api.put(`/admin/market-windows/${id}`, windowData);
   return response.data;
 };
 
-
+// Funzione per salvare la formazione di un utente
 export const saveFormation = async (userId, formationData) => {
   try {
     const response = await api.post(`/teams/${userId}/formation`, formationData);
@@ -233,6 +240,7 @@ export const saveFormation = async (userId, formationData) => {
   }
 };
 
+// Funzione per ottenere lo stato della formazione di un utente
 export const getFormationStatus = async (userId) => {
   try {
     const response = await api.get(`/teams/${userId}/formation-status`);
@@ -243,10 +251,7 @@ export const getFormationStatus = async (userId) => {
   }
 };
 
-
-
-///////////////////////////////////////////////////////////////////////////////
-
+// Funzione per ottenere le performance dei giocatori per una specifica gameweek
 export const getPlayerPerformances = async (gameweek) => {
   try {
     const response = await api.get(`/performances/gameweek/${gameweek}`);
@@ -257,7 +262,7 @@ export const getPlayerPerformances = async (gameweek) => {
   }
 };
 
-
+// Funzione per calcolare il punteggio di una squadra per una specifica gameweek
 export const calculateTeamScore = async (userId, gameweek) => {
   try {
     const response = await api.post(`/teams/${userId}/calculate-score`, { gameweek });
@@ -269,6 +274,7 @@ export const calculateTeamScore = async (userId, gameweek) => {
   }
 };
 
+// Funzione per ottenere la formazione corrente di un utente
 export const getCurrentFormation = async (userId) => {
   try {
     const response = await api.get(`/teams/${userId}/formation`);

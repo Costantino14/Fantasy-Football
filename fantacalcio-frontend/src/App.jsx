@@ -22,8 +22,6 @@ const ContactUs = React.lazy(() => import('./pages/ContactUs'));
 const MatchDetails = React.lazy(() => import('./pages/MatchDetails'));
 const GameInstructions = React.lazy(() => import('./pages/GameInstructions'));
 
-
-
 const ADMIN_EMAIL = 'costantino.grabesu14@gmail.com';
 
 function App() {
@@ -59,46 +57,24 @@ function App() {
             <Route path="/istruzioni" element={<GameInstructions />} />
             <Route path="/profilo" element={<UserProfile />} />
             <Route path="/contact" element={<ContactUs />} />
-            <Route 
-              path="/market" 
-              element={
-                <ProtectedRoute>
-                  <Market />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/myTeam" 
-              element={
-                <ProtectedRoute>
-                  <MyTeam />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/GamePlay" 
-              element={
-                <ProtectedRoute>
-                  <GamePage />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/classifica" 
-              element={
-                <ProtectedRoute>
-                  <LeaderBoard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/admin" 
-              element={
-                <AdminRoute>
-                  <AdminDashboard />
-                </AdminRoute>
-              } 
-            />
+
+            {/*Rotte protette*/}
+            <Route path="/market" element={<ProtectedRoute>
+                                              <Market />
+                                          </ProtectedRoute>} />
+            <Route path="/myTeam" element={<ProtectedRoute>
+                                              <MyTeam />
+                                          </ProtectedRoute>} />
+            
+            <Route path="/GamePlay" element={<ProtectedRoute>
+                                              <GamePage />
+                                            </ProtectedRoute>}/>
+            <Route path="/classifica" element={<ProtectedRoute>
+                                                <LeaderBoard />
+                                              </ProtectedRoute>}/>
+            <Route path="/admin" element={<AdminRoute>
+                                            <AdminDashboard />
+                                          </AdminRoute>}/>
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

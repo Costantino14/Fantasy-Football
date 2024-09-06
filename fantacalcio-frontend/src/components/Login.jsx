@@ -84,6 +84,7 @@ export default function Login() {
               </div>
             </form>
             <div className="divider my-6">OPPURE</div>
+            
             {/* link alle istruzioni e alla registrazione */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between">
             <Link to="/istruzioni" className="btn btn-outline btn-secondary mb-4 md:mb-0">

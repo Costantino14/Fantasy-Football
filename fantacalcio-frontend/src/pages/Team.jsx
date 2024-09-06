@@ -10,6 +10,7 @@ const TeamLogo = ({ src, alt, teamName }) => {
   const [imageSrc, setImageSrc] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Effetto per caricare l'immagine del logo
   useEffect(() => {
     setIsLoading(true);
     const img = new Image();
@@ -24,10 +25,12 @@ const TeamLogo = ({ src, alt, teamName }) => {
     img.src = src;
   }, [src]);
 
+  // Mostra un placeholder durante il caricamento
   if (isLoading) {
     return <div className="w-14 h-14 rounded-full bg-gray-600 animate-pulse"></div>;
   }
 
+  // Non mostrare nulla se l'immagine non può essere caricata
   if (!imageSrc) {
     return null;
   }
@@ -123,6 +126,8 @@ export default function Team() {
         border: '4px solid #FFD700',
       }}
     >
+
+      {/* Immagine e dettagli principali del giocatore */}
       <div className="relative h-96 overflow-hidden">
         <img 
           src={player.photo} 
@@ -142,6 +147,7 @@ export default function Team() {
         </div>
       </div>
 
+      {/* Statistiche di base del giocatore */}
       <div className="p-4 bg-black">
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div className="flex justify-between">
@@ -172,6 +178,7 @@ export default function Team() {
         </div>
       </div>
 
+      {/* Statistiche dettagliate del giocatore (visualizzate al click) */}
       {activePlayer === player && (
         <motion.div 
           initial={{ opacity: 0 }}
@@ -181,6 +188,7 @@ export default function Team() {
         >
           <h3 className="text-lg font-semibold mb-2">Statistiche dettagliate</h3>
           <div className="grid grid-cols-2 gap-2 text-sm">
+            {/* Dettagli statistici del giocatore */}
             <p>Età: {player.age}</p>
             <p>Nazionalità: {player.nationality}</p>
             <p>Altezza: {player.height}</p>
@@ -232,6 +240,7 @@ export default function Team() {
   // Renderizza il componente principale
   return (
     <div className="container mx-auto my-8 px-4 min-h-screen py-10">
+      {/* Header con logo e nome della squadra */}
       <motion.div 
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}

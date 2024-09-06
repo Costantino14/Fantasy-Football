@@ -5,6 +5,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import FormationDisplay from '../components/FormationDisplay';
 import ErrorMessage from '../components/ErrorMessage';
 
+// Definizione delle formazioni disponibili e dei relativi limiti di giocatori per ruolo
 const FORMATIONS = {
   '3-4-3': { Defender: 3, Midfielder: 4, Attacker: 3 },
   '4-4-2': { Defender: 4, Midfielder: 4, Attacker: 2 },
@@ -13,6 +14,7 @@ const FORMATIONS = {
   '3-5-2': { Defender: 3, Midfielder: 5, Attacker: 2 },
 };
 
+// Componente per visualizzare la card di un giocatore
 const PlayerCard = ({ player, onSelect, isSelected }) => (
   <div 
     className={`bg-gray-800 rounded-lg shadow-md p-4 flex flex-col items-center cursor-pointer ${isSelected ? 'border-2 border-green-500' : ''}`}
@@ -27,6 +29,8 @@ const PlayerCard = ({ player, onSelect, isSelected }) => (
 );
 
 export default function MyTeam() {
+
+  //Configurazione stati e variabili
   const { user } = useAuth();
   const [team, setTeam] = useState(null);
   const [allPlayers, setAllPlayers] = useState([]);
@@ -43,6 +47,7 @@ export default function MyTeam() {
   const [formationStatus, setFormationStatus] = useState(null);
   const [currentFormation, setCurrentFormation] = useState(null);
 
+  // Effetto per caricare i dati iniziali
   useEffect(() => {
     const fetchData = async () => {
       if (!user) {
@@ -51,6 +56,7 @@ export default function MyTeam() {
       }
       try {
         setIsLoading(true);
+        //Richiama quattro Promise assegnate ai quattro stati
         const [teamData, playersData, statusData, currentFormationData] = await Promise.all([
           getUserTeam(user._id),
           getAllSerieAPlayers(),
@@ -60,6 +66,8 @@ export default function MyTeam() {
         setTeam(teamData);
         setAllPlayers(playersData);
         setFormationStatus(statusData);
+
+        //Se la formazione corrente esiste
         if (currentFormationData) {
           setCurrentFormation(currentFormationData);
           setSelectedFormation(currentFormationData.schema);
@@ -80,6 +88,7 @@ export default function MyTeam() {
     fetchData();
   }, [user]);
 
+  // Gestisce il cambio di formazione
   const handleFormationChange = (formation) => {
     setSelectedFormation(formation);
     if (!currentFormation) {
@@ -92,6 +101,7 @@ export default function MyTeam() {
     }
   };
 
+  // Gestisce la selezione di un giocatore
   const handlePlayerSelect = (player) => {
     const position = player.position;
     const maxPlayers = position === 'Goalkeeper' ? 1 : FORMATIONS[selectedFormation][position];
@@ -108,6 +118,7 @@ export default function MyTeam() {
     });
   };
 
+  // Verifica se la formazione è completa
   const isFormationComplete = () => {
     return lineup.Goalkeeper.length === 1 &&
            lineup.Defender.length === FORMATIONS[selectedFormation].Defender &&
@@ -115,12 +126,13 @@ export default function MyTeam() {
            lineup.Attacker.length === FORMATIONS[selectedFormation].Attacker;
   };
 
+  // Gestisce il salvataggio della formazione
   const handleSaveFormation = async () => {
     if (!formationStatus || !formationStatus.canSet) {
       alert(formationStatus ? formationStatus.message : 'Non puoi impostare la formazione in questo momento.');
       return;
     }
-
+    //Se la formazione non è completa
     if (!isFormationComplete()) {
       alert('Devi selezionare tutti e 11 i giocatori prima di salvare la formazione.');
       return;
@@ -140,8 +152,9 @@ export default function MyTeam() {
     }
   };
 
+  // Rendering condizionale basato sullo stato del componente
   if (isLoading) return <LoadingSpinner />;
-  if (!user) return  <ErrorMessage message={'Effettua il login per vedere la tua squadra'} />;
+  if (!user) return <ErrorMessage message={'Effettua il login per vedere la tua squadra'} />;
   if (error) return <ErrorMessage message={error} />;
   if (!team || teamPlayers.length === 0) return <ErrorMessage message={'Nessuna squadra o giocatore trovato'} />;
 
@@ -153,6 +166,7 @@ export default function MyTeam() {
         <p className="text-lg text-gray-300">Totale giocatori: {teamPlayers.length}/24</p>
       </div>
 
+      {/* Visualizzazione dello stato della formazione */}
       {formationStatus && (
         <div className="bg-blue-600 text-white p-4 rounded-lg mb-6">
           {formationStatus.canSet ? (
@@ -166,6 +180,7 @@ export default function MyTeam() {
         </div>
       )}
 
+      {/* Selezione della formazione */}
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-white mb-2">Seleziona Formazione</h2>
         <select 
@@ -180,6 +195,7 @@ export default function MyTeam() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Lista dei giocatori disponibili */}
         <div>
           <h2 className="text-2xl font-bold text-white mb-4">Giocatori Disponibili</h2>
           {['Goalkeeper', 'Defender', 'Midfielder', 'Attacker'].map(position => (
@@ -201,6 +217,8 @@ export default function MyTeam() {
             </div>
           ))}
         </div>
+        
+        {/* Visualizzazione della formazione selezionata */}
         <div className="lg:sticky lg:top-4 self-start">
           <h2 className="text-2xl font-bold text-white mb-4">Formazione Selezionata</h2>
           <FormationDisplay lineup={lineup} formation={selectedFormation} />
@@ -221,6 +239,7 @@ export default function MyTeam() {
               </div>
             </div>
           ))}
+          {/* Pulsante per salvare la formazione */}
           <button 
             onClick={handleSaveFormation}
             className={`px-4 py-2 rounded mt-4 ${
