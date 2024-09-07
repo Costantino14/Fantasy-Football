@@ -36,7 +36,7 @@ const TeamLogo = ({ src, alt, teamName }) => {
   }
 
   // Lista di squadre con loghi scuri che necessitano di uno sfondo chiaro
-  const teamsWithDarkLogos = ['juventus', 'inter', /* altre squadre con loghi scuri */];
+  const teamsWithDarkLogos = ['juventus' /* altre squadre con loghi scuri */];
   const specialLogoClass = teamsWithDarkLogos.some(team => teamName.toLowerCase().includes(team))
     ? 'bg-white p-1 rounded-full' 
     : 'bg-transparent';

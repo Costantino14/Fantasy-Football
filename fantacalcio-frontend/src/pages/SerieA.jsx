@@ -5,6 +5,7 @@ import { it } from 'date-fns/locale';
 import LoadingSpinner from '../components/LoadingSpinner'
 import { Link } from 'react-router-dom';
 import ErrorMessage from '../components/ErrorMessage';
+import TeamLogo from '../components/TeamLogo';
 
 // Componente per visualizzare la tabella della classifica
 const StandingsTable = ({ teams }) => (
@@ -28,15 +29,15 @@ const StandingsTable = ({ teams }) => (
           <td>{team.rank}</td>
           <td>
           <Link to={`/team/${encodeURIComponent(team.team.name)}`}>
-            <div className="flex items-center gap-3">
-              <div className="avatar">
-                <div className="mask mask-squircle h-12 w-12">
-                  <img src={team.team.logo} alt={`${team.team.name} logo`} />
-                </div>
-              </div>
-              <div className="font-bold">{team.team.name}</div>
-            </div>
-            </Link>
+          <div className="flex items-center gap-3">
+            <TeamLogo 
+              src={team.team.logo} 
+              alt={`${team.team.name} logo`} 
+              teamName={team.team.name}
+            />
+            <div className="font-bold">{team.team.name}</div>
+          </div>
+          </Link>
           </td>
           <td>{team.points}</td>
           <td>{team.all.played}</td>

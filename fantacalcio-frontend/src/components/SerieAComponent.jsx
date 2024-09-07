@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { format, parseISO, isAfter, isWithinInterval , isBefore, addHours  } from 'date-fns';
 import { it } from 'date-fns/locale';
 import ErrorMessage from './ErrorMessage';
+import TeamLogo from './TeamLogo';
 
 // Componente per visualizzare una singola partita
 const MatchFixture = ({ match }) => {
@@ -175,11 +176,12 @@ export default function SerieAComponent() {
                     <Link to={`/team/${encodeURIComponent(team.team.name)}`}>
                     <td className="px-4 py-2">
                       <div className="flex items-center gap-3">
-                        <div className="avatar">
-                          <div className="mask mask-squircle w-10 h-10">
-                            <img src={team.team.logo} alt={`${team.team.name} logo`} />
-                          </div>
-                        </div>
+                        <TeamLogo
+                          src={team.team.logo} 
+                          alt={`${team.team.name} logo`} 
+                          teamName={team.team.name}
+                        />
+                        
                         <div className="font-bold">{team.team.name}</div>
                       </div>
                     </td>
