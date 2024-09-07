@@ -22,10 +22,13 @@ FantasyFootball è una piattaforma web interattiva che offre un'esperienza di fa
 - **Classifica**: 
   - Classifica generale della lega
   - Classifiche per giornata
+- **Serie A**: 
+  - Classifica
+  - Tutti i match con dettagli delle singole partite
+  - Classifica dei marcatori e degli assistman
+  - Reparto delle squadre con le schede aggiornate delle statistiche dei giocatori
 - **Dashboard Amministratore**: 
-  - Gestione degli utenti
   - Controllo delle finestre di mercato
-  - Monitoraggio delle prestazioni del sistema
 
 ## Tecnologie Utilizzate
 
@@ -46,24 +49,17 @@ FantasyFootball è una piattaforma web interattiva che offre un'esperienza di fa
 ### API Esterne
 - API-Football per dati in tempo reale della Serie A
 
-### Strumenti di Sviluppo
-- ESLint per il linting del codice
-- Prettier per la formattazione del codice
-- Jest per i test unitari
-- GitHub Actions per CI/CD
 
 ## Prerequisiti
 
 - Node.js (v14.0.0 o superiore)
 - MongoDB (v4.4 o superiore)
-- NPM (v6.0.0 o superiore) o Yarn (v1.22.0 o superiore)
-- Un account API-Football con chiave API valida
+- Account API-Football con chiave API valida 
 
 ## Installazione
 
 1. Clona il repository:
    ```bash
-   git clone https://github.com/tuousername/fantasyfootball.git
    cd fantasyfootball
    ```
 
@@ -103,13 +99,13 @@ Crea un file `.env` nella cartella `backend` con le seguenti variabili:
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 API_FOOTBALL_KEY=your_api_football_key
-PORT=5000
+PORT=5001
 NODE_ENV=development
 ```
 
 ### Configurazione del Database
 
-Il progetto utilizza MongoDB. Assicurati di avere un'istanza MongoDB in esecuzione e configura l'URI di connessione nel file `.env`.
+Il progetto utilizza MongoDB. 
 
 ## Uso
 
@@ -119,8 +115,7 @@ Il progetto utilizza MongoDB. Assicurati di avere un'istanza MongoDB in esecuzio
    - Effettua il login con le credenziali appena create
 
 2. **Creazione Squadra**:
-   - Dopo il login, verrai reindirizzato alla pagina di creazione squadra
-   - Scegli un nome per la tua squadra e inizia a selezionare i giocatori
+   - Dopo il login, comparirà il componente Coach con un pulsante per creare la squadra
 
 3. **Mercato**:
    - Vai alla sezione "Mercato" per acquistare o vendere giocatori
@@ -128,9 +123,10 @@ Il progetto utilizza MongoDB. Assicurati di avere un'istanza MongoDB in esecuzio
 
 4. **Gestione Formazione**:
    - Accedi a "La Mia Squadra" per impostare la formazione
-   - Seleziona 11 titolari e scegli la tattica
+   - Scegli la tattica e seleziona gli 11 titolari
 
-5. **Visualizzazione Classifica**:
+5. **Visualizzazione delle prestazioni e della Classifica**:
+   - Controlla la performance della tua squadra su GamePlay
    - Controlla la tua posizione nella sezione "Classifica"
 
 6. **Dashboard Admin** (solo per amministratori):
@@ -143,29 +139,37 @@ fantasyfootball/
 │
 ├── backend/
 │   ├── config/
-│   │   └── db.js
-│   ├── controllers/
-│   │   ├── authController.js
-│   │   ├── teamController.js
-│   │   └── marketController.js
+│   │   └── cloudinaryConfig.js
+│   ├── jobs/
+│   │   ├── automatedPlayerPerformanceUpdate.js
+│   │   ├── marketWindowJob.js
+│   │   ├── scheduledJobs.js
+│   │   └── updateSerieAPlayersJob.js
 │   ├── middlewares/
+│   │   ├── adminMiddleware.js
 │   │   ├── authMiddleware.js
-│   │   ├── errorMiddleware.js
-│   │   └── ...
+│   │   ├── checkMarketOpen.js
+│   │   └── errorHandlers.js
 │   ├── models/
 │   │   ├── User.js
 │   │   ├── Team.js
 │   │   ├── PlayerPerformance.js
+│   │   ├── SerieAPlayer.js
 │   │   └── ...
 │   ├── routes/
 │   │   ├── authRoutes.js
 │   │   ├── teamRoutes.js
-│   │   └── marketRoutes.js
+│   │   ├── userRoutes.js
+│   │   └── ...
 │   ├── services/
-│   │   └── apiFootballService.js
+│   │   ├── emailServices.js
+│   │   ├── scoreCalculationService.js
+│   │   └── ...
 │   ├── utils/
-│   │   └── jwtUtils.js
-│   ├── tests/
+│   │   └── jwt.js
+│   ├── priceAlgorithm.js
+│   ├── initializeSerieADatabase.js
+│   ├── populateGameWeeks.js
 │   └── server.js
 │
 ├── frontend/
@@ -187,7 +191,8 @@ fantasyfootball/
 │   │   │   ├── api.js
 │   │   │   ├── apisport.js
 │   │   │   └── gameService.js
-│   │   └── App.js
+│   │   ├── App.jsx
+│   │   └── main.js
 │   └── package.json
 │
 ├── .gitignore
@@ -198,25 +203,24 @@ fantasyfootball/
 
 Il backend espone le seguenti API principali:
 
-- `/api/auth`: Gestione autenticazione (registrazione, login)
 - `/api/users`: CRUD operazioni per gli utenti
-- `/api/teams`: CRUD operazioni per le squadre
-- `/api/market`: Operazioni di mercato (acquisto, vendita giocatori)
-- `/api/serieaplayers`: Informazioni sui giocatori
+- `/api/teams`: CRUD operazioni per le proprie squadre
+- `/api/marketwindow`: Informazioni sulle sessioni di mercato
+- `/api/serieaplayers`: Informazioni sui giocatori della serie A 2024
+- `/api/serieaplayers23`: Informazioni sui giocatori della serie A 2023
 - `/api/playerperformances`: Informazioni sulle performance dei giocatori
+- `/api/gameweek`: Informazioni sulle settimane di gioco
 
 ## Deployment
 
 ### Backend
 1. Assicurati che tutte le variabili d'ambiente siano configurate correttamente
 2. Esegui `npm run build` nella cartella backend
-3. Avvia il server con `npm start`
+3. Avvia il server con `node server.js`
 
 ### Frontend
 1. Nella cartella frontend, esegui `npm run build`
 2. Distribuisci la cartella `build` generata su un server web statico
-
-Per istruzioni dettagliate sul deployment, consulta [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Roadmap
 
@@ -235,11 +239,11 @@ R: Al momento, contatta l'amministratore per reimpostare la password. Stiamo lav
 R: Puoi modificare la tua formazione fino a 5 minuti prima dell'inizio della prima partita di ogni giornata di campionato.
 
 **D: Come vengono calcolati i punteggi?**
-R: I punteggi sono calcolati in base alle prestazioni reali dei giocatori in Serie A, utilizzando un sistema di punti personalizzato. Per i dettagli completi, consulta la sezione "Calcolo Punteggi" nelle istruzioni del gioco.
+R: I punteggi sono calcolati in base alle prestazioni reali dei giocatori in Serie A, utilizzando un sistema di punti personalizzato. Per i dettagli completi, consulta la sezione "Accumula Punti e Domina" nelle istruzioni del gioco.
 
 
 ## Contatti
 
-[Il tuo Nome] - [@tuotwitter](https://twitter.com/tuotwitter) - email@example.com
+Costantino Grabesu - costantino.grabesu14@gmail.com
 
-Link del Progetto: [https://github.com/yourusername/fantasyfootball](https://github.com/yourusername/fantasyfootball)
+Link del Progetto: https://https://github.com/Costantino14/Fantasy-Football
